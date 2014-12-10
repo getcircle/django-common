@@ -8,6 +8,9 @@ class UUIDModel(django_models.Model):
 
     id = django_models.UUIDField(primary_key=True, default=uuid.uuid4)
 
+    class Meta:
+        abstract = True
+
 
 class TimestampableModel(django_models.Model):
 
