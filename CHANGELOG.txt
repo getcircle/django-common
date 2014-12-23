@@ -1,6 +1,11 @@
 Changelog
 =========
 
+0.0.7 - 2014-12-23
+------------------
+
+Add migration operation for creating postgres extension
+
 0.0.5 - 2014-12-10
 ------------------
 
