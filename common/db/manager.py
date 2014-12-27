@@ -1,5 +1,5 @@
 from django.db import models as django_models
-from protbuf_to_dict import protobuf_to_dict
+from protobuf_to_dict import protobuf_to_dict
 
 
 class CommonManager(django_models.Manager):
