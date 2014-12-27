@@ -19,8 +19,10 @@ class Model(django_models.Model):
             output[field.attname] = value
         return output
 
-    def to_protobuf(self, protobuf, strict=False):
-        return dict_to_protobuf(self.as_dict(), protobuf, strict=strict)
+    def to_protobuf(self, protobuf, strict=False, **overrides):
+        model = self.as_dict()
+        model.update(overrides)
+        return dict_to_protobuf(model, protobuf, strict=strict)
 
     class Meta:
         abstract = True
