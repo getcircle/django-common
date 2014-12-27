@@ -1,6 +1,17 @@
 Changelog
 =========
 
+0.1.1 - 2014-12-27
+------------------
+
+Support passing extra fields into `from_protobuf`
+Support passing overrides to `to_protobuf`
+
+0.1.0 - 2014-12-27
+------------------
+
+Preserve boolean values when outputting as a dictionary
+
 0.0.10 - 2014-12-26
 ------------------
 
