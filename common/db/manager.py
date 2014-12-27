@@ -10,5 +10,7 @@ class CommonManager(django_models.Manager):
         except self.model.DoesNotExist:
             return None
 
-    def from_protobuf(self, protobuf):
-        return self.create(**protobuf_to_dict(protobuf))
+    def from_protobuf(self, protobuf, **extra):
+        params = protobuf_to_dict(protobuf)
+        params.update(extra)
+        return self.create(**params)
