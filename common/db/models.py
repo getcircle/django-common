@@ -13,7 +13,10 @@ class Model(django_models.Model):
     def as_dict(self):
         output = {}
         for field in self._meta.fields:
-            output[field.attname] = field.value_to_string(self)
+            value = field.value_from_object(self)
+            if not isinstance(value, (bool,)):
+                value = field.value_to_string(self)
+            output[field.attname] = value
         return output
 
     def to_protobuf(self, protobuf, strict=False):
