@@ -10,6 +10,12 @@ class Model(django_models.Model):
 
     objects = CommonManager()
 
+    def as_dict(self):
+        output = {}
+        for field in self._meta.fields:
+            output[field.attname] = field.value_to_string(self)
+        return output
+
     class Meta:
         abstract = True
 
