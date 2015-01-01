@@ -6,6 +6,10 @@ from protobuf_to_dict import dict_to_protobuf
 from .manager import CommonManager
 
 
+class Null(object):
+    pass
+
+
 class Model(django_models.Model):
 
     objects = CommonManager()
@@ -23,6 +27,13 @@ class Model(django_models.Model):
         model = self.as_dict()
         model.update(overrides)
         return dict_to_protobuf(model, protobuf, strict=strict)
+
+    def update_from_protobuf(self, protobuf):
+        value_dict = dict(map(lambda x: (x[0].name, x[1]), protobuf.ListFields()))
+        for field in self._meta.fields:
+            value = value_dict.get(field.attname, Null())
+            if not isinstance(value, Null):
+                setattr(self, field.attname, field.to_python(value))
 
     class Meta:
         abstract = True
