@@ -14,17 +14,22 @@ class Model(django_models.Model):
 
     objects = CommonManager()
 
-    def as_dict(self):
+    def as_dict(self, extra=tuple()):
         output = {}
         for field in self._meta.fields:
             value = field.value_from_object(self)
             if not isinstance(value, (bool,)):
                 value = field.value_to_string(self)
             output[field.attname] = value
+
+        for attribute in extra:
+            value = getattr(self, attribute, None)
+            output[attribute] = value
+
         return output
 
-    def to_protobuf(self, protobuf, strict=False, **overrides):
-        model = self.as_dict()
+    def to_protobuf(self, protobuf, strict=False, extra=tuple(), **overrides):
+        model = self.as_dict(extra=extra)
         model.update(overrides)
         return dict_to_protobuf(model, protobuf, strict=strict)
 
