@@ -28,7 +28,11 @@ class Model(django_models.Model):
 
         return output
 
-    def to_protobuf(self, protobuf, strict=False, extra=tuple(), **overrides):
+    def to_protobuf(self, protobuf, strict=False, extra=None, **overrides):
+        if extra is None:
+            extra = []
+
+        extra.extend(getattr(self, 'protobuf_include_fields', []))
         model = self.as_dict(extra=extra)
         model.update(overrides)
         return dict_to_protobuf(model, protobuf, strict=strict)
