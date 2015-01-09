@@ -14,7 +14,7 @@ class Model(django_models.Model):
 
     objects = CommonManager()
 
-    def as_dict(self, extra=tuple()):
+    def as_dict(self, extra=tuple(), exclude=tuple()):
         output = {}
         for field in self._meta.fields:
             value = field.value_from_object(self)
@@ -25,6 +25,9 @@ class Model(django_models.Model):
         for attribute in extra:
             value = getattr(self, attribute, None)
             output[attribute] = value
+
+        for field in exclude:
+            output.pop(field, None)
 
         return output
 
