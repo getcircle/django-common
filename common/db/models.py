@@ -41,6 +41,7 @@ class Model(django_models.Model):
         return dict_to_protobuf(model, protobuf, strict=strict)
 
     def update_from_protobuf(self, protobuf):
+        # XXX we shouldn't allow updating changed and created, look into editable=False
         value_dict = dict(map(lambda x: (x[0].name, x[1]), protobuf.ListFields()))
         for field in self._meta.fields:
             value = value_dict.get(field.attname, Null())
