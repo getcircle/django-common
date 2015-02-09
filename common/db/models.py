@@ -1,5 +1,5 @@
 import uuid
-from django.db.models import *
+from django.db.models import *  # NOQA
 from django.db import models as django_models
 from protobuf_to_dict import dict_to_protobuf
 
@@ -40,11 +40,14 @@ class Model(django_models.Model):
         model.update(overrides)
         return dict_to_protobuf(model, protobuf, strict=strict)
 
-    def update_from_protobuf(self, protobuf):
+    def update_from_protobuf(self, protobuf, **overrides):
         # XXX we shouldn't allow updating changed and created, look into editable=False
         value_dict = dict(map(lambda x: (x[0].name, x[1]), protobuf.ListFields()))
         for field in self._meta.fields:
-            value = value_dict.get(field.attname, Null())
+            if field.attname in overrides:
+                value = overrides[field.attname]
+            else:
+                value = value_dict.get(field.attname, Null())
             if not isinstance(value, Null):
                 setattr(self, field.attname, field.to_python(value))
 
