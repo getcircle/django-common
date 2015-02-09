@@ -18,7 +18,7 @@ class Model(django_models.Model):
         output = {}
         for field in self._meta.fields:
             value = field.value_from_object(self)
-            if not isinstance(value, (bool,)):
+            if not isinstance(value, (bool, None.__class__)):
                 value = field.value_to_string(self)
             output[field.attname] = value
 
