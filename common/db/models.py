@@ -12,14 +12,22 @@ class Null(object):
 
 class Model(django_models.Model):
 
+    as_dict_value_transforms = None
     objects = CommonManager()
 
     def as_dict(self, extra=tuple(), exclude=tuple()):
+        if self.as_dict_value_transforms is None:
+            self.as_dict_value_transforms = {}
+
         output = {}
         for field in self._meta.fields:
             value = field.value_from_object(self)
             if not isinstance(value, (bool, None.__class__)):
-                value = field.value_to_string(self)
+                transform = self.as_dict_value_transforms.get(field.name)
+                if transform is not None and callable(transform):
+                    value = transform(value)
+                else:
+                    value = field.value_to_string(self)
             output[field.attname] = value
 
         for attribute in extra:
