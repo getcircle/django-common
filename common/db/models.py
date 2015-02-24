@@ -46,6 +46,8 @@ class Model(django_models.Model):
         extra.extend(getattr(self, 'protobuf_include_fields', []))
         model = self.as_dict(extra=extra)
         model.update(overrides)
+        for field in getattr(self, 'protobuf_exclude_fields', []):
+            model.pop(field, None)
         return dict_to_protobuf(model, protobuf, strict=strict)
 
     def update_from_protobuf(self, protobuf, **overrides):
