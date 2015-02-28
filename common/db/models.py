@@ -80,3 +80,16 @@ class TimestampableModel(Model):
 
     class Meta:
         abstract = True
+
+
+class SafelyDeletableModel(Model):
+
+    DELETED_STATUS = 1
+    STATUS_CHOICES = (
+        (DELETED_STATUS, 'Deleted'),
+    )
+
+    status = models.PositiveSmallIntegerField(null=True, choices=STATUS_CHOICES)
+
+    class Meta:
+        abstract = True
