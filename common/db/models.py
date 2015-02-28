@@ -89,7 +89,7 @@ class SafelyDeletableModel(Model):
         (DELETED_STATUS, 'Deleted'),
     )
 
-    status = models.PositiveSmallIntegerField(null=True, choices=STATUS_CHOICES)
+    status = django_models.PositiveSmallIntegerField(null=True, choices=STATUS_CHOICES)
 
     class Meta:
         abstract = True
