@@ -20,7 +20,10 @@ class CommonManager(django_models.Manager):
 
         parameters = {}
         for field in self.model._meta.fields:
-            value = values.get(field.attname, Null())
+            if field.is_relation:
+                value = values.get(field.name, {}).get(field.related_field.attname, Null())
+            else:
+                value = values.get(field.attname, Null())
             if not isinstance(value, Null):
                 parameters[field.attname] = field.to_python(value)
 
