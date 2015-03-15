@@ -45,7 +45,9 @@ class Model(django_models.Model):
         if extra is None:
             extra = []
 
-        extra.extend(getattr(self, 'protobuf_include_fields', []))
+        if not only:
+            extra.extend(getattr(self, 'protobuf_include_fields', []))
+
         model = self.as_dict(extra=extra, only=only)
         model.update(overrides)
         for field in getattr(self, 'protobuf_exclude_fields', []):
