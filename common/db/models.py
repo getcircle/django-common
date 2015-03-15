@@ -15,12 +15,14 @@ class Model(django_models.Model):
     as_dict_value_transforms = None
     objects = CommonManager()
 
-    def as_dict(self, extra=tuple(), exclude=tuple()):
+    def as_dict(self, extra=tuple(), exclude=tuple(), only=tuple()):
         if self.as_dict_value_transforms is None:
             self.as_dict_value_transforms = {}
 
         output = {}
         for field in self._meta.fields:
+            if only and field.attname not in only:
+                continue
             value = field.value_from_object(self)
             if not isinstance(value, (bool, None.__class__)):
                 transform = self.as_dict_value_transforms.get(field.name)
@@ -39,12 +41,12 @@ class Model(django_models.Model):
 
         return output
 
-    def to_protobuf(self, protobuf, strict=False, extra=None, **overrides):
+    def to_protobuf(self, protobuf, strict=False, extra=None, only=tuple(), **overrides):
         if extra is None:
             extra = []
 
         extra.extend(getattr(self, 'protobuf_include_fields', []))
-        model = self.as_dict(extra=extra)
+        model = self.as_dict(extra=extra, only=only)
         model.update(overrides)
         for field in getattr(self, 'protobuf_exclude_fields', []):
             model.pop(field, None)
