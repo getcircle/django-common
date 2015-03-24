@@ -7,6 +7,7 @@ class TimedQuerySet(QuerySet):
 
     def _get_metric_name(self, query_type):
         return 'database.query.%s.%s.%s.time' % (
+            query_type,
             self.model._meta.app_label,
             self.model._meta.model_name,
         )
