@@ -25,7 +25,7 @@ class TimedQuerySet(QuerySet):
     def count(self, *args, **kwargs):
         with metrics.time(self._get_metric_name('count')):
             results = super(TimedQuerySet, self).count(*args, **kwargs)
-        return count
+        return results
 
     def get(self, *args, **kwargs):
         with metrics.time(self._get_metric_name('get')):
