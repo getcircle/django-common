@@ -11,7 +11,7 @@ class Null(object):
 class CommonManager(django_models.Manager):
 
     def get_queryset(self):
-        if metris is not None:
+        if metrics is not None:
             return TimedQuerySet(self.model, using=self._db, hints=self._hints)
         else:
             return super(CommonManager, self).get_queryset()
