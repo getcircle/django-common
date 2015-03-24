@@ -1,6 +1,6 @@
 from django.db.models.query import QuerySet
 
-from ..compat import metrics
+from ...compat import metrics
 
 
 class TimedQuerySet(QuerySet):
