@@ -1,4 +1,4 @@
-from django.db.query import QuerySet
+from django.db.models.query import QuerySet
 
 from ..compat import metrics
 
