@@ -1,5 +1,7 @@
 from django.db import models as django_models
 from protobuf_to_dict import protobuf_to_dict
+from ...compat import metrics
+from .query import TimedQuerySet
 
 
 class Null(object):
@@ -7,6 +9,12 @@ class Null(object):
 
 
 class CommonManager(django_models.Manager):
+
+    def get_queryset(self):
+        if metris is not None:
+            return TimedQuerySet(self.model, using=self._db, hints=self._hints)
+        else:
+            return super(CommonManager, self).get_queryset()
 
     def get_or_none(self, *args, **kwargs):
         try:
