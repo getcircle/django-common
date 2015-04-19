@@ -12,6 +12,7 @@ class Null(object):
 
 class Model(django_models.Model):
 
+    model_to_protobuf_mapping = None
     as_dict_value_transforms = None
     objects = CommonManager()
 
@@ -48,22 +49,32 @@ class Model(django_models.Model):
         if not only:
             extra.extend(getattr(self, 'protobuf_include_fields', []))
 
+        if self.model_to_protobuf_mapping is None:
+            self.model_to_protobuf_mapping = {}
+
         model = self.as_dict(extra=extra, only=only)
         model.update(overrides)
+        for model_field, protobuf_field in self.model_to_protobuf_mapping.iteritems():
+            model[protobuf_field] = model.pop(model_field, None)
+
         for field in getattr(self, 'protobuf_exclude_fields', []):
             model.pop(field, None)
         return dict_to_protobuf(model, protobuf, strict=strict)
 
     def update_from_protobuf(self, protobuf, **overrides):
+        if self.model_to_protobuf_mapping is None:
+            self.model_to_protobuf_mapping = {}
+
         # XXX we shouldn't allow updating changed and created, look into editable=False
         value_dict = dict(map(lambda x: (x[0].name, x[1]), protobuf.ListFields()))
         for field in self._meta.fields:
-            if field.attname in overrides:
+            protobuf_field = self.model_to_protobuf_mapping.get(field.attname, field.attname)
+            if protobuf_field in overrides:
                 value = overrides[field.attname]
             else:
                 value = value_dict.get(field.attname, Null())
             if not isinstance(value, Null):
-                setattr(self, field.attname, field.to_python(value))
+                setattr(self, protobuf_field, field.to_python(value))
 
     class Meta:
         abstract = True
