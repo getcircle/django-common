@@ -70,9 +70,9 @@ class Model(django_models.Model):
         for field in self._meta.fields:
             protobuf_field = self.model_to_protobuf_mapping.get(field.attname, field.attname)
             if protobuf_field in overrides:
-                value = overrides[field.attname]
+                value = overrides[protobuf_field]
             else:
-                value = value_dict.get(field.attname, Null())
+                value = value_dict.get(protobuf_field, Null())
             if not isinstance(value, Null):
                 setattr(self, protobuf_field, field.to_python(value))
 
