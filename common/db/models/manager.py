@@ -26,14 +26,16 @@ class CommonManager(django_models.Manager):
         values = protobuf_to_dict(protobuf)
         values.update(extra)
 
+        model_to_protobuf_mapping = getattr(self.model, 'model_to_protobuf_mapping', {})
         parameters = {}
         for field in self.model._meta.fields:
+            protobuf_field = model_to_protobuf_mapping.get(field.name, field.name)
             value = Null()
             if field.is_relation:
-                value = values.get(field.name, {}).get(field.related_field.attname, Null())
+                value = values.get(protobuf_field, {}).get(field.related_field.attname, Null())
 
             if isinstance(value, Null):
-                value = values.get(field.attname, Null())
+                value = values.get(protobuf_field, Null())
 
             if not isinstance(value, Null):
                 parameters[field.attname] = field.to_python(value)
