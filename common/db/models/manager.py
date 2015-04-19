@@ -26,7 +26,7 @@ class CommonManager(django_models.Manager):
         values = protobuf_to_dict(protobuf)
         values.update(extra)
 
-        model_to_protobuf_mapping = getattr(self.model, 'model_to_protobuf_mapping', {})
+        model_to_protobuf_mapping = getattr(self.model, 'model_to_protobuf_mapping') or {}
         parameters = {}
         for field in self.model._meta.fields:
             protobuf_field = model_to_protobuf_mapping.get(field.name, field.name)
