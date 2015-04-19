@@ -74,7 +74,7 @@ class Model(django_models.Model):
             else:
                 value = value_dict.get(protobuf_field, Null())
             if not isinstance(value, Null):
-                setattr(self, protobuf_field, field.to_python(value))
+                setattr(self, field.attname, field.to_python(value))
 
     class Meta:
         abstract = True
