@@ -35,6 +35,7 @@ class CommonManager(django_models.Manager):
                 value = values.get(protobuf_field, {}).get(field.related_field.attname, Null())
 
             if isinstance(value, Null):
+                protobuf_field = model_to_protobuf_mapping.get(field.attname, field.attname)
                 value = values.get(protobuf_field, Null())
 
             if not isinstance(value, Null):
