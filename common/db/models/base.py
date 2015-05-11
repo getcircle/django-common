@@ -1,9 +1,13 @@
 import uuid
 from django.db.models import *  # NOQA
 from django.db import models as django_models
+from django.db.models import options
 from protobuf_to_dict import dict_to_protobuf
 
 from .manager import CommonManager
+
+# Support specifying protobuf in model meta
+options.DEFAULT_NAMES = options.DEFAULT_NAMES + ('protobuf',)
 
 
 class Null(object):
