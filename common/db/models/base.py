@@ -46,7 +46,16 @@ class Model(django_models.Model):
 
         return output
 
-    def to_protobuf(self, protobuf, strict=False, extra=None, only=tuple(), **overrides):
+    @classmethod
+    def verify_has_protobuf(cls):
+        if cls._meta.protobuf is None:
+            raise NotImplementedError('Must define `protobuf` in meta')
+
+    def to_protobuf(self, protobuf=None, strict=False, extra=None, only=tuple(), **overrides):
+        if protobuf is None:
+            self.verify_has_protobuf()
+            protobuf = self._meta.protobuf()
+
         if extra is None:
             extra = []
 
