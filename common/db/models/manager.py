@@ -27,6 +27,7 @@ class CommonManager(django_models.Manager):
         values.update(extra)
 
         model_to_protobuf_mapping = getattr(self.model, 'model_to_protobuf_mapping') or {}
+        from_protobuf_transforms = getattr(self.model, 'from_protobuf_transforms') or {}
         parameters = {}
         for field in self.model._meta.fields:
             protobuf_field = model_to_protobuf_mapping.get(field.name, field.name)
@@ -39,7 +40,10 @@ class CommonManager(django_models.Manager):
                 value = values.get(protobuf_field, Null())
 
             if not isinstance(value, Null):
-                parameters[field.attname] = field.to_python(value)
+                value = field.to_python(value)
+                if protobuf_field in from_protobuf_transforms:
+                    value = from_protobuf_transforms[protobuf_field](value)
+                parameters[field.attname] = value
 
         if commit:
             return self.create(**parameters)
