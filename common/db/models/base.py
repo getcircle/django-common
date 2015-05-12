@@ -16,6 +16,7 @@ class Null(object):
 
 class Model(django_models.Model):
 
+    from_protobuf_transforms = None
     model_to_protobuf_mapping = None
     as_dict_value_transforms = None
     objects = CommonManager()
