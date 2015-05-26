@@ -30,12 +30,11 @@ class Model(django_models.Model):
             if only and field.attname not in only:
                 continue
             value = field.value_from_object(self)
-            if not isinstance(value, (bool, None.__class__)):
-                transform = self.as_dict_value_transforms.get(field.name)
-                if transform is not None and callable(transform):
-                    value = transform(value)
-                else:
-                    value = field.value_to_string(self)
+            transform = self.as_dict_value_transforms.get(field.name)
+            if transform is not None and callable(transform):
+                value = transform(value)
+            elif not isinstance(value, (bool, None.__class__)):
+                value = field.value_to_string(self)
             output[field.attname] = value
 
         for attribute in extra:
