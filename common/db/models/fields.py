@@ -47,3 +47,8 @@ class ProtobufField(django_models.Field):
             'message_data': protobuf_to_dict(value),
         }
         return json.dumps(content)
+
+    def deconstruct(self):
+        name, path, args, kwargs = super(ProtobufField, self).deconstruct()
+        kwargs.update({'protobuf_classes': self.protobuf_classes})
+        return name, path, args, kwargs
