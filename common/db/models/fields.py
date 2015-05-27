@@ -17,8 +17,16 @@ class ProtobufField(django_models.Field):
     def get_internal_type(self):
         return 'TextField'
 
+    def from_db_value(self, value, expression, connection, context):
+        if value is None:
+            return value
+        return self.to_python(value)
+
     def to_python(self, value):
         if value is None:
+            return value
+
+        if hasattr(value, 'SerializeToString'):
             return value
 
         content = json.loads(value)
