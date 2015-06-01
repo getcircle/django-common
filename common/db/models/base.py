@@ -81,6 +81,9 @@ class Model(django_models.Model):
         # XXX we shouldn't allow updating changed and created, look into editable=False
         value_dict = dict(map(lambda x: (x[0].name, x[1]), protobuf.ListFields()))
         for field in self._meta.fields:
+            if not field.editable:
+                continue
+
             protobuf_field = self.model_to_protobuf_mapping.get(field.attname, field.attname)
             if protobuf_field in overrides:
                 value = overrides[protobuf_field]
