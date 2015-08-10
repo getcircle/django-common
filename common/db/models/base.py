@@ -2,7 +2,10 @@ import uuid
 from django.db.models import *  # NOQA
 from django.db import models as django_models
 from django.db.models import options
-from protobuf_to_dict import dict_to_protobuf
+from protobuf_to_dict import (
+    dict_to_protobuf,
+    protobuf_to_dict,
+)
 
 from .manager import CommonManager
 
@@ -93,6 +96,10 @@ class Model(django_models.Model):
                 value = overrides[protobuf_field]
             else:
                 value = value_dict.get(protobuf_field, Null())
+
+            if hasattr(value, 'FromString'):
+                value = protobuf_to_dict(value)
+
             if not isinstance(value, Null):
                 setattr(self, field.attname, field.to_python(value))
 
