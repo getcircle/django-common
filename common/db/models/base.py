@@ -36,7 +36,9 @@ class Model(django_models.Model):
             transform = self.as_dict_value_transforms.get(field.name)
             if transform is not None and callable(transform):
                 value = transform(value)
-            elif not isinstance(value, (bool, None.__class__)):
+            elif hasattr(field, 'as_dict_value_transform'):
+                value = field.as_dict_value_transform(value)
+            elif not isinstance(value, (bool, None.__class__, dict)):
                 value = field.value_to_string(self)
             output[field.attname] = value
 
