@@ -70,6 +70,7 @@ class Model(django_models.Model):
             strict=False,
             extra=None,
             fields=None,
+            inflations=None,
             **overrides
         ):
         protobuf = self.new_protobuf_container(protobuf)
