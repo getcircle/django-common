@@ -78,6 +78,8 @@ class Model(django_models.Model):
         if extra is None:
             extra = []
 
+        extra.extend(getattr(self, 'protobuf_include_fields', []))
+
         if self.model_to_protobuf_mapping is None:
             self.model_to_protobuf_mapping = {}
 
