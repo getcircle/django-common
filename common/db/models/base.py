@@ -8,6 +8,7 @@ from protobuf_to_dict import (
 )
 
 from .manager import CommonManager
+from ...utils import should_populate_field
 
 # Support specifying protobuf in model meta
 options.DEFAULT_NAMES = options.DEFAULT_NAMES + ('protobuf',)
@@ -24,14 +25,15 @@ class Model(django_models.Model):
     as_dict_value_transforms = None
     objects = CommonManager()
 
-    def as_dict(self, extra=tuple(), exclude=tuple(), only=tuple()):
+    def as_dict(self, extra=tuple(), fields=None):
         if self.as_dict_value_transforms is None:
             self.as_dict_value_transforms = {}
 
         output = {}
         for field in self._meta.fields:
-            if only and field.attname not in only:
+            if not should_populate_field(field.attname, fields):
                 continue
+
             value = field.value_from_object(self)
             transform = self.as_dict_value_transforms.get(field.name)
             if transform is not None and callable(transform):
@@ -43,11 +45,11 @@ class Model(django_models.Model):
             output[field.attname] = value
 
         for attribute in extra:
+            if not should_populate_field(attribute, fields):
+                continue
+
             value = getattr(self, attribute, None)
             output[attribute] = value
-
-        for field in exclude:
-            output.pop(field, None)
 
         return output
 
@@ -62,25 +64,30 @@ class Model(django_models.Model):
             protobuf = self._meta.protobuf()
         return protobuf
 
-    def to_protobuf(self, protobuf=None, strict=False, extra=None, only=tuple(), **overrides):
+    def to_protobuf(
+            self,
+            protobuf=None,
+            strict=False,
+            extra=None,
+            fields=None,
+            **overrides
+        ):
         protobuf = self.new_protobuf_container(protobuf)
 
         if extra is None:
             extra = []
 
-        if not only:
-            extra.extend(getattr(self, 'protobuf_include_fields', []))
-
         if self.model_to_protobuf_mapping is None:
             self.model_to_protobuf_mapping = {}
 
-        model = self.as_dict(extra=extra, only=only)
+        model = self.as_dict(extra=extra, fields=fields)
         model.update(overrides)
         for model_field, protobuf_field in self.model_to_protobuf_mapping.iteritems():
             model[protobuf_field] = model.pop(model_field, None)
 
         for field in getattr(self, 'protobuf_exclude_fields', []):
             model.pop(field, None)
+
         return dict_to_protobuf(model, protobuf, strict=strict)
 
     def update_from_protobuf(self, protobuf, **overrides):
