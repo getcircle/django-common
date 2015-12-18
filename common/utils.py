@@ -31,7 +31,7 @@ def should_populate_field(field_name, fields):
             (fields.exclude and field_name in fields.exclude)
         ):
             should_populate = False
-        return should_populate
+    return should_populate
 
 
 def uuid_from_hex(hex_value, version=4):

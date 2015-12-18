@@ -66,3 +66,6 @@ class Test(TestCase):
         self.assertTrue(should_populate_field('random', fields))
         fields = common_containers.FieldsV1(only=['random'])
         self.assertTrue(should_populate_field('random', fields))
+
+    def test_should_populate_field_true_if_no_fields(self):
+        self.assertTrue(should_populate_field('random', None))
