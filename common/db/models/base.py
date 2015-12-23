@@ -97,7 +97,7 @@ class Model(django_models.Model):
         if self.model_to_protobuf_mapping is None:
             self.model_to_protobuf_mapping = {}
 
-        # XXX we shouldn't allow updating changed and created, look into editable=False
+        from_protobuf_transforms = getattr(self, 'from_protobuf_transforms') or {}
         value_dict = dict(map(lambda x: (x[0].name, x[1]), protobuf.ListFields()))
         for field in self._meta.fields:
             if not field.editable:
@@ -113,7 +113,10 @@ class Model(django_models.Model):
                 value = protobuf_to_dict(value)
 
             if not isinstance(value, Null):
-                setattr(self, field.attname, field.to_python(value))
+                value = field.to_python(value)
+                if protobuf_field in from_protobuf_transforms:
+                    value = from_protobuf_transforms[protobuf_field](value)
+                setattr(self, field.attname, value)
 
     class Meta:
         abstract = True
