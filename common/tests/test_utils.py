@@ -9,28 +9,16 @@ from ..utils import (
 
 class Test(TestCase):
 
-    def test_should_inflate_field_enabled(self):
-        # legacy proto2 "enabled" is defaulted to True
+    def test_should_inflate_field_disabled(self):
         inflations = common_containers.InflationsV1()
         self.assertTrue(should_inflate_field('random_field', inflations))
 
-        inflations = common_containers.InflationsV1(enabled=False)
+        inflations = common_containers.InflationsV1(disabled=True)
         self.assertFalse(should_inflate_field('random_field', inflations))
 
     def test_should_inflate_field_accepts_dict(self):
-        self.assertTrue(should_inflate_field('random_field', {'enabled': True}))
-        self.assertFalse(should_inflate_field('random_field', {'enabled': False}))
-
-    def test_should_inflate_field_disabled(self):
-        inflations = {'disabled': False}
-        self.assertTrue(should_inflate_field('random', inflations))
-        inflations = {'disabled': True}
-        self.assertFalse(should_inflate_field('random', inflations))
-
-        self.assertFalse(should_inflate_field('other', {'disabled': True, 'only': ['other']}))
-
-    def test_should_inflate_field_only_disabled(self):
-        self.assertFalse(should_inflate_field('random', {'disabled': True, 'only': ['random']}))
+        self.assertTrue(should_inflate_field('random_field', {'disabled': False}))
+        self.assertFalse(should_inflate_field('random_field', {'disabled': True}))
 
     def test_should_inflate_field_only(self):
         self.assertFalse(should_inflate_field('random', {'only': ['other']}))
@@ -67,5 +55,5 @@ class Test(TestCase):
         fields = common_containers.FieldsV1(only=['random'])
         self.assertTrue(should_populate_field('random', fields))
 
-    def test_should_populate_field_true_if_no_fields(self):
+    def test_should_populate_field_false_if_no_fields(self):
         self.assertTrue(should_populate_field('random', None))
