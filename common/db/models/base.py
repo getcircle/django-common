@@ -98,7 +98,7 @@ class Model(django_models.Model):
             self.model_to_protobuf_mapping = {}
 
         from_protobuf_transforms = getattr(self, 'from_protobuf_transforms') or {}
-        value_dict = dict(map(lambda x: (x[0].name, x[1]), protobuf.ListFields()))
+        value_dict = protobuf_to_dict(protobuf)
         for field in self._meta.fields:
             if not field.editable:
                 continue
