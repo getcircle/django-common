@@ -124,7 +124,7 @@ class Model(django_models.Model):
 
 class UUIDModel(Model):
 
-    id = django_models.UUIDField(primary_key=True, default=uuid.uuid4)
+    id = django_models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
 
     class Meta:
         abstract = True
