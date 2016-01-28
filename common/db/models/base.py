@@ -91,16 +91,16 @@ class Model(django_models.Model):
         for field in getattr(self, 'protobuf_exclude_fields', []):
             model.pop(field, None)
 
-        if not isinstance(fields, dict):
+        if fields and not isinstance(fields, dict):
             fields = protobuf_to_dict(fields)
 
-        if not isinstance(inflations, dict):
+        if inflations and not isinstance(inflations, dict):
             inflations = protobuf_to_dict(inflations)
 
-        if 'fields' not in model:
+        if fields and 'fields' not in model:
             model['fields'] = fields
 
-        if 'inflations' not in model:
+        if inflations and 'inflations' not in model:
             model['inflations'] = inflations
 
         return dict_to_protobuf(model, protobuf, strict=strict)
