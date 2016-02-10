@@ -144,8 +144,8 @@ class UUIDModel(Model):
 
 class TimestampableModel(Model):
 
-    created = django_models.DateTimeField(auto_now_add=True)
-    changed = django_models.DateTimeField(auto_now=True)
+    created = django_models.DateTimeField(auto_now_add=True, editable=False)
+    changed = django_models.DateTimeField(auto_now=True, editable=False)
 
     class Meta:
         abstract = True
