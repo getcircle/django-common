@@ -39,16 +39,16 @@ class CommonManager(django_models.Manager):
                 protobuf_field = model_to_protobuf_mapping.get(field.attname, field.attname)
                 value = values.get(protobuf_field, Null())
 
+            # only accept values for non-editable fields if they were provided
+            # in extra. protects against values being passed in containers.
+            if not field.editable and protobuf_field not in extra:
+                continue
+
             if not isinstance(value, Null):
                 value = field.to_python(value)
                 if protobuf_field in from_protobuf_transforms:
                     value = from_protobuf_transforms[protobuf_field](value)
                 parameters[field.attname] = value
-
-            # only accept values for non-editable fields if they were provided
-            # in extra. protects against values being passed in containers.
-            if not field.editable and protobuf_field not in extra:
-                parameters.pop(field.attname, None)
 
         if commit:
             return self.create(**parameters)
