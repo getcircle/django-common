@@ -30,6 +30,9 @@ class CommonManager(django_models.Manager):
         from_protobuf_transforms = getattr(self.model, 'from_protobuf_transforms') or {}
         parameters = {}
         for field in self.model._meta.fields:
+            if not field.editable:
+                continue
+
             protobuf_field = model_to_protobuf_mapping.get(field.name, field.name)
             value = Null()
             if field.is_relation:
