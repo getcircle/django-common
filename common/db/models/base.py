@@ -105,9 +105,12 @@ class Model(django_models.Model):
 
         return dict_to_protobuf(model, protobuf, strict=strict)
 
-    def update_from_protobuf(self, protobuf, commit=False, **overrides):
+    def update_from_protobuf(self, protobuf, commit=False, ignore_fields=None, **overrides):
         if self.model_to_protobuf_mapping is None:
             self.model_to_protobuf_mapping = {}
+
+        if ignore_fields is None:
+            ignore_fields = []
 
         from_protobuf_transforms = getattr(self, 'from_protobuf_transforms') or {}
         value_dict = protobuf_to_dict(protobuf)
@@ -116,6 +119,9 @@ class Model(django_models.Model):
                 continue
 
             protobuf_field = self.model_to_protobuf_mapping.get(field.attname, field.attname)
+            if protobuf_field in ignore_fields:
+                continue
+
             if protobuf_field in overrides:
                 value = overrides[protobuf_field]
             else:
