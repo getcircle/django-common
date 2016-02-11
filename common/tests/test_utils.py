@@ -2,6 +2,10 @@ from protobufs.services.common import containers_pb2 as common_containers
 from unittest import TestCase
 
 from ..utils import (
+    fields_for_item,
+    fields_for_repeated_item,
+    inflations_for_repeated_item,
+    inflations_for_item,
     should_inflate_field,
     should_populate_field,
 )
@@ -57,3 +61,79 @@ class Test(TestCase):
 
     def test_should_populate_field_false_if_no_fields(self):
         self.assertTrue(should_populate_field('random', None))
+
+    def test_fields_for_repeated_item(self):
+        fields = {
+            'only': [
+                '[]collections.[]items.post.title',
+                'description',
+                '[]collections.[]items.post.by_profile_id',
+            ],
+            'exclude': ['[]collections.[]items.post.content'],
+        }
+        per_collection_fields = fields_for_repeated_item('collections', fields)
+        self.assertEqual(
+            per_collection_fields.only,
+            ['[]items.post.title', '[]items.post.by_profile_id'],
+        )
+        self.assertEqual(
+            per_collection_fields.exclude,
+            ['[]items.post.content'],
+        )
+
+        per_item_fields = fields_for_repeated_item('items', per_collection_fields)
+        self.assertEqual(per_item_fields.only, ['post.title', 'post.by_profile_id'])
+        self.assertEqual(per_item_fields.exclude, ['post.content'])
+
+    def test_fields_for_item(self):
+        fields = {
+            'only': ['post.title', 'post.by_profile_id', 'description'],
+            'exclude': ['post.content'],
+        }
+        per_item_fields = fields_for_item('post', fields)
+        self.assertEqual(per_item_fields.only, ['title', 'by_profile_id'])
+        self.assertEqual(per_item_fields.exclude, ['content'])
+
+    def test_inflations_for_repeated_item(self):
+        inflations = {
+            'only': [
+                '[]collections.[]items.post.title',
+                'description',
+                '[]collections.[]items.post.by_profile_id',
+            ],
+            'exclude': ['[]collections.[]items.post.content'],
+        }
+        per_collection_inflations = inflations_for_repeated_item('collections', inflations)
+        self.assertFalse(per_collection_inflations.disabled)
+        self.assertEqual(
+            per_collection_inflations.only,
+            ['[]items.post.title', '[]items.post.by_profile_id'],
+        )
+        self.assertEqual(
+            per_collection_inflations.exclude,
+            ['[]items.post.content'],
+        )
+
+        per_item_inflations = inflations_for_repeated_item('items', per_collection_inflations)
+        self.assertEqual(per_item_inflations.only, ['post.title', 'post.by_profile_id'])
+        self.assertEqual(per_item_inflations.exclude, ['post.content'])
+
+        inflations['disabled'] = True
+        per_collection_inflations = inflations_for_repeated_item('collections', inflations)
+        self.assertTrue(per_collection_inflations.disabled)
+
+        per_item_inflations = inflations_for_repeated_item('items', per_collection_inflations)
+        self.assertTrue(per_item_inflations.disabled)
+
+    def test_inflations_for_item(self):
+        inflations = {
+            'only': ['post.title', 'post.by_profile_id', 'description'],
+            'exclude': ['post.content'],
+        }
+        per_item_inflations = inflations_for_item('post', inflations)
+        self.assertEqual(per_item_inflations.only, ['title', 'by_profile_id'])
+        self.assertEqual(per_item_inflations.exclude, ['content'])
+
+        inflations['disabled'] = True
+        per_item_inflations = inflations_for_item('post', inflations)
+        self.assertTrue(per_item_inflations.disabled)
