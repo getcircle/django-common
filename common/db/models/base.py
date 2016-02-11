@@ -130,7 +130,7 @@ class Model(django_models.Model):
                     value = from_protobuf_transforms[protobuf_field](value)
                 setattr(self, field.attname, value)
 
-        if commmit:
+        if commit:
             self.save()
 
     class Meta:
