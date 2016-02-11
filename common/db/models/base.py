@@ -105,7 +105,7 @@ class Model(django_models.Model):
 
         return dict_to_protobuf(model, protobuf, strict=strict)
 
-    def update_from_protobuf(self, protobuf, **overrides):
+    def update_from_protobuf(self, protobuf, commit=False, **overrides):
         if self.model_to_protobuf_mapping is None:
             self.model_to_protobuf_mapping = {}
 
@@ -129,6 +129,9 @@ class Model(django_models.Model):
                 if protobuf_field in from_protobuf_transforms:
                     value = from_protobuf_transforms[protobuf_field](value)
                 setattr(self, field.attname, value)
+
+        if commmit:
+            self.save()
 
     class Meta:
         abstract = True
