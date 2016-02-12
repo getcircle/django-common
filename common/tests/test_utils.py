@@ -4,7 +4,9 @@ from unittest import TestCase
 from ..utils import (
     fields_for_item,
     fields_for_repeated_item,
+    fields_for_repeated_items,
     inflations_for_repeated_item,
+    inflations_for_repeated_items,
     inflations_for_item,
     should_inflate_field,
     should_populate_field,
@@ -85,6 +87,10 @@ class Test(TestCase):
         self.assertEqual(per_item_fields.only, ['post.title', 'post.by_profile_id'])
         self.assertEqual(per_item_fields.exclude, ['post.content'])
 
+        per_item_fields = fields_for_repeated_items('collections.items', fields)
+        self.assertEqual(per_item_fields.only, ['post.title', 'post.by_profile_id'])
+        self.assertEqual(per_item_fields.exclude, ['post.content'])
+
     def test_fields_for_item(self):
         fields = {
             'only': ['post.title', 'post.by_profile_id', 'description'],
@@ -115,6 +121,10 @@ class Test(TestCase):
         )
 
         per_item_inflations = inflations_for_repeated_item('items', per_collection_inflations)
+        self.assertEqual(per_item_inflations.only, ['post.title', 'post.by_profile_id'])
+        self.assertEqual(per_item_inflations.exclude, ['post.content'])
+
+        per_item_inflations = inflations_for_repeated_items('collections.items', inflations)
         self.assertEqual(per_item_inflations.only, ['post.title', 'post.by_profile_id'])
         self.assertEqual(per_item_inflations.exclude, ['post.content'])
 

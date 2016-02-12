@@ -21,6 +21,18 @@ def strip_field_name(field_name, original_array):
     return new_array
 
 
+def fields_for_repeated_items(field_name, fields):
+    for field_name in field_name.split('.'):
+        fields = fields_for_repeated_item(field_name, fields)
+    return fields
+
+
+def inflations_for_repeated_items(field_name, inflations):
+    for field_name in field_name.split('.'):
+        inflations = inflations_for_repeated_item(field_name, inflations)
+    return inflations
+
+
 def fields_for_repeated_item(field_name, fields):
     """Unpack field specifications for repeated items.
 
